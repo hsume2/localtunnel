@@ -9,6 +9,8 @@ require 'localtunnel/net_ssh_gateway_patch'
 
 module LocalTunnel; end
 
+require 'localtunnel/tunnel_app'
+
 class LocalTunnel::Tunnel
 
   SHELL_HOOK_FILE = "./.localtunnel_callback"
@@ -53,10 +55,16 @@ class LocalTunnel::Tunnel
           puts "   (Make sure it is executable)"
         end
       end
+      TunnelApp.tunnel = tunnel['host']
+      pid = fork {
+        TunnelApp.run!
+      }
       puts "   Port #{port} is now publicly accessible from http://#{tunnel['host']} ..."
       begin
         sleep 1 while true
       rescue Interrupt
+        Process.kill('KILL', pid)
+        Process.waitpid(pid)
         gateway.close_remote(rp, rh)
         exit
       end

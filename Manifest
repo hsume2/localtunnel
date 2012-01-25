@@ -6,5 +6,4 @@ lib/localtunnel.rb
 lib/localtunnel/net_ssh_gateway_patch.rb
 lib/localtunnel/tunnel.rb
 lib/localtunnel/tunnel_app.rb
-localtunnel.gemspec
 server.py

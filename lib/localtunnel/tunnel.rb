@@ -57,7 +57,7 @@ class LocalTunnel::Tunnel
 
     error = ''
 
-    status = Open4::popen4("ssh -nNT -g -R *:#{tunnel['through_port']}:0.0.0.0:#{port} #{tunnel['user']}@#{@host} -o PasswordAuthentication=no") do |pid, i, o, e|
+    status = Open4::popen4("ssh -nNT -g -R *:#{tunnel['through_port']}:0.0.0.0:#{port} #{tunnel['user']}@#{@host} -o PasswordAuthentication=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null") do |pid, i, o, e|
       puts "   " << tunnel['banner'] if tunnel.has_key? 'banner'
       if File.exists?(File.expand_path(SHELL_HOOK_FILE))
         system "#{SHELL_HOOK_FILE} ""#{tunnel['host']}""" if File.exists?(File.expand_path(SHELL_HOOK_FILE))

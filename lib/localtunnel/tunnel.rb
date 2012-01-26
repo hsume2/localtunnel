@@ -5,6 +5,7 @@ require 'net/http'
 require 'uri'
 require 'json'
 require 'open4'
+require 'twilio-ruby'
 
 require 'localtunnel/net_ssh_gateway_patch'
 
@@ -16,12 +17,13 @@ class LocalTunnel::Tunnel
 
   SHELL_HOOK_FILE = "./.localtunnel_callback"
 
-  attr_accessor :port, :key, :host
+  attr_accessor :port, :key, :host, :config
 
-  def initialize(port, key)
+  def initialize(port, key, config)
     @port = port
     @key  = key
     @host = ""
+    @config = config
   end
 
   def register_tunnel(key=@key)
@@ -66,6 +68,19 @@ class LocalTunnel::Tunnel
           puts "   (Make sure it is executable)"
         end
       end
+
+      if @config
+        @client = Twilio::REST::Client.new(@config['account_sid'], @config['auth_token'])
+        @account = @client.account
+        properties = @config['urls'].inject({}) do |urls, k_v|
+          k, v = k_v
+          urls[k] = URI.join("http://#{tunnel['host']}", v).to_s
+          urls
+        end
+        pn = @account.incoming_phone_numbers.get(@config['phone_number_sid']).update(properties)
+        puts "   Updated #{pn.phone_number} for localtunnel."
+      end
+
       puts "   Port #{port} is now publicly accessible from http://#{tunnel['host']} ..."
 
       begin

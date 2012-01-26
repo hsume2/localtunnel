@@ -12,6 +12,6 @@ Echoe.new('localtunnel', '0.3') do |p|
   p.rdoc_options   = []
   p.ignore_pattern = ["tmp/*", "script/*"]
   p.executable_pattern = ["bin/*"]
-  p.runtime_dependencies = ["json >=1.2.4", "net-ssh >=2.0.22", "net-ssh-gateway >=1.0.1", "sinatra >=1.3.2", "POpen4 >=0.1.4"]
+  p.runtime_dependencies = ["json >=1.2.4", "net-ssh >=2.0.22", "net-ssh-gateway >=1.0.1", "sinatra >=1.3.2", "POpen4 >=0.1.4", "twilio-ruby >=3.5.1"]
   p.development_dependencies = []
 end

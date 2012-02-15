@@ -77,8 +77,12 @@ class LocalTunnel::Tunnel
           urls[k] = URI.join("http://#{tunnel['host']}", v).to_s
           urls
         end
-        pn = @account.incoming_phone_numbers.get(@config['phone_number_sid']).update(properties)
-        puts "   Updated #{pn.phone_number} for localtunnel."
+        sids = [@config['phone_number_sid']]
+        sids |= @config['phone_number_sids'] if @config['phone_number_sids']
+        sids.compact.flatten.each do |sid|
+          pn = @account.incoming_phone_numbers.get(sid).update(properties)
+          puts "   Updated #{pn.phone_number} for localtunnel."
+        end
       end
 
       puts "   Port #{port} is now publicly accessible from http://#{tunnel['host']} ..."

@@ -34,18 +34,21 @@ options = OptionParser.new do |o|
     key = File.exist?(k.to_s) ? File.open(k).read : nil
   end
   o.on('-h', "--help", "show this help") { puts o; exit }
-  o.on('-c', "--config FILE", "configure for Twilio phone number for localtunnel",
+  o.on('-c', "--config FILE", "configure Twilio phone numbers for localtunnel from config file",
                               "Example (YAML):",
                               "  ---",
-                              "  account_sid:        AC...",
-                              "  auth_token:         ...",
-                              "  phone_number_sid:   PN...",
-                              "  urls:",
-                              "    voice_url:          /voice/calls/...",
-                              "    status_callback:    /voice/calls/...",
-                              "    voice_fallback_url: /voice/calls/...",
-                              "    sms_url:            /voice/calls/...") do |k|
+                              "  - account_sid:        AC...",
+                              "    auth_token:         ...",
+                              "    phone_number_sid:   PN...",
+                              "    urls:",
+                              "      voice_url:          /voice/calls/...",
+                              "      status_callback:    /voice/calls/...",
+                              "      voice_fallback_url: /voice/calls/...",
+                              "      sms_url:            /voice/calls/...") do |k|
     config = File.exist?(k.to_s) ? YAML::load(File.open(k)) : nil
+  end
+  o.on('-e', "--evaluate YAML", "configure Twilio phone numbers for localtunnel from YAML string") do |k|
+    config = YAML::load(k.gsub("\\n", "\n"))
   end
 end
 

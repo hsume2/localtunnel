@@ -69,18 +69,16 @@ class LocalTunnel::Tunnel
         end
       end
 
-      if @config
-        @client = Twilio::REST::Client.new(@config['account_sid'], @config['auth_token'])
-        @account = @client.account
-        properties = @config['urls'].inject({}) do |urls, k_v|
-          k, v = k_v
-          urls[k] = URI.join("http://#{tunnel['host']}", v).to_s
-          urls
-        end
-        sids = [@config['phone_number_sid']]
-        sids |= @config['phone_number_sids'] if @config['phone_number_sids']
-        sids.compact.flatten.each do |sid|
-          pn = @account.incoming_phone_numbers.get(sid).update(properties)
+      if @config && @config.any?
+        @config.each do |config|
+          client = Twilio::REST::Client.new(config['account_sid'], config['auth_token'])
+          account = client.account
+          properties = config['urls'].inject({}) do |urls, k_v|
+            k, v = k_v
+            urls[k] = URI.join("http://#{tunnel['host']}", v).to_s
+            urls
+          end
+          pn = account.incoming_phone_numbers.get(config['phone_number_sid']).update(properties)
           puts "   Updated #{pn.phone_number} for localtunnel."
         end
       end
